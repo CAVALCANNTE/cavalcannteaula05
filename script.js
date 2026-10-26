@@ -1,4 +1,4 @@
-// Captura de Elementos do DOM
+// elementos do DOM
 const formTarefa = document.getElementById('form-tarefa');
 const inputTarefa = document.getElementById('input-tarefa');
 const listaTarefas = document.getElementById('lista-tarefas');
@@ -9,20 +9,20 @@ const contador = document.getElementById('contador');
 const inputBusca = document.getElementById('input-busca');
 const chkOrdenar = document.getElementById('chk-ordenar');
 
-// Estado da Aplicação
+// estado
 let tarefas = JSON.parse(localStorage.getItem('tarefas_app')) || [];
-let termoBusca = '';
+let busca = '';
 
-// 1. Inicialização
+// inicialização
 document.addEventListener('DOMContentLoaded', () => {
   carregarTema();
-  chkOrdenar.checked = JSON.parse(localStorage.getItem('ordenar_concluidas')) || false;
+  chkOrdenar.checked = JSON.parse(localStorage.getItem('ordenar')) || false;
   renderizarTarefas();
 });
 
-// 2. Escutadores de Eventos (addEventListener)
+// eventos
 formTarefa.addEventListener('submit', (e) => {
-  e.preventDefault(); // Impede o recarregamento da página
+  e.preventDefault();
   adicionarTarefa();
 });
 
@@ -39,19 +39,17 @@ btnTema.addEventListener('click', () => {
   localStorage.setItem('tema_escuro', eEscuro);
 });
 
-// Exercício 2: filtro em tempo real (evento input)
 inputBusca.addEventListener('input', () => {
-  termoBusca = inputBusca.value.toLowerCase().trim();
+  busca = inputBusca.value.toLowerCase().trim();
   renderizarTarefas();
 });
 
-// Exercício 4: ordenação
 chkOrdenar.addEventListener('change', () => {
-  localStorage.setItem('ordenar_concluidas', chkOrdenar.checked);
+  localStorage.setItem('ordenar', chkOrdenar.checked);
   renderizarTarefas();
 });
 
-// 3. Funções Práticas
+// funções
 function adicionarTarefa() {
   const texto = inputTarefa.value.trim();
 
@@ -66,7 +64,6 @@ function adicionarTarefa() {
     id: Date.now(),
     texto: texto,
     concluida: false,
-    // Exercício 5: data/hora de criação
     criadaEm: new Date().toLocaleString('pt-BR')
   };
 
@@ -84,22 +81,14 @@ function alternarStatus(id) {
   salvarERenderizar();
 }
 
-// Exercício 3: edição de tarefas
 function editarTarefa(id) {
-  const tarefa = tarefas.find(t => t.id === id);
-  if (!tarefa) return;
+  const novoTexto = prompt('Digite o novo texto da tarefa:');
 
-  const novoTexto = prompt('Edite a descrição da tarefa:', tarefa.texto);
-  if (novoTexto === null) return; // usuário cancelou
-
-  const textoLimpo = novoTexto.trim();
-  if (textoLimpo === '') {
-    alert('A descrição da tarefa não pode ficar vazia.');
-    return;
-  }
+  // se cancelou ou deixou vazio não muda nada
+  if (novoTexto === null || novoTexto.trim() === '') return;
 
   tarefas = tarefas.map(t => {
-    if (t.id === id) t.texto = textoLimpo;
+    if (t.id === id) t.texto = novoTexto.trim();
     return t;
   });
   salvarERenderizar();
@@ -115,11 +104,9 @@ function salvarERenderizar() {
   renderizarTarefas();
 }
 
-// Exercício 1: contador de total e pendentes
 function atualizarContador() {
-  const total = tarefas.length;
   const pendentes = tarefas.filter(t => !t.concluida).length;
-  contador.textContent = `Total: ${total} | Pendentes: ${pendentes}`;
+  contador.textContent = 'Total: ' + tarefas.length + ' | Pendentes: ' + pendentes;
 }
 
 function renderizarTarefas() {
@@ -131,42 +118,35 @@ function renderizarTarefas() {
     return;
   }
 
-  // Filtro (Exercício 2)
-  let tarefasExibidas = tarefas.filter(t =>
-    t.texto.toLowerCase().includes(termoBusca)
-  );
+  // filtro da busca
+  let lista = tarefas.filter(t => t.texto.toLowerCase().includes(busca));
 
-  // Ordenação sobre uma cópia (Exercício 4)
+  // concluídas no final
   if (chkOrdenar.checked) {
-    tarefasExibidas = [...tarefasExibidas].sort(
-      (a, b) => Number(a.concluida) - Number(b.concluida)
-    );
+    lista = [...lista].sort((a, b) => Number(a.concluida) - Number(b.concluida));
   }
 
-  if (tarefasExibidas.length === 0) {
-    listaTarefas.innerHTML = '<li><small>Nenhuma tarefa encontrada para essa busca.</small></li>';
+  if (lista.length === 0) {
+    listaTarefas.innerHTML = '<li><small>Nenhuma tarefa encontrada.</small></li>';
     return;
   }
 
-  tarefasExibidas.forEach(t => {
+  lista.forEach(t => {
     const li = document.createElement('li');
     if (t.concluida) li.classList.add('concluida');
 
-    const info = document.createElement('div');
-    info.className = 'tarefa-info';
+    const div = document.createElement('div');
+    div.className = 'tarefa-info';
 
     const span = document.createElement('span');
     span.textContent = t.texto;
     span.addEventListener('click', () => alternarStatus(t.id));
 
-    const small = document.createElement('small');
-    small.textContent = `Criada em: ${t.criadaEm || 'data não registrada'}`;
+    const data = document.createElement('small');
+    data.textContent = 'Criada em: ' + t.criadaEm;
 
-    info.appendChild(span);
-    info.appendChild(small);
-
-    const botoes = document.createElement('div');
-    botoes.className = 'tarefa-botoes';
+    div.appendChild(span);
+    div.appendChild(data);
 
     const btnEditar = document.createElement('button');
     btnEditar.textContent = 'Editar';
@@ -178,10 +158,12 @@ function renderizarTarefas() {
     btnExcluir.className = 'btn-remove';
     btnExcluir.addEventListener('click', () => removerTarefa(t.id));
 
+    const botoes = document.createElement('div');
+    botoes.className = 'tarefa-botoes';
     botoes.appendChild(btnEditar);
     botoes.appendChild(btnExcluir);
 
-    li.appendChild(info);
+    li.appendChild(div);
     li.appendChild(botoes);
     listaTarefas.appendChild(li);
   });
