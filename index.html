@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>JS Externo, DOM e LocalStorage</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Gerenciador de Tarefas e Preferências</h1>
+      <button id="btn-tema">Alternar Tema</button>
+    </header>
+
+    <section id="sec-form">
+      <h2>1) Cadastrar Nova Tarefa</h2>
+      <form id="form-tarefa">
+        <div class="field-group">
+          <input type="text" id="input-tarefa" placeholder="Digite uma nova tarefa..." required />
+          <button type="submit">Adicionar</button>
+        </div>
+        <small id="erro-msg" class="error"></small>
+      </form>
+    </section>
+
+    <section id="sec-lista">
+      <h2>2) Minhas Tarefas (Persistidas no LocalStorage)</h2>
+
+      <!-- Exercício 1: Contador -->
+      <p id="contador" class="contador">Total: 0 | Pendentes: 0</p>
+
+      <!-- Exercício 2: Filtro de busca -->
+      <div class="field-group">
+        <input type="text" id="input-busca" placeholder="Buscar tarefas..." />
+      </div>
+
+      <div class="actions">
+        <!-- Exercício 4: Ordenação -->
+        <label class="ordenar">
+          <input type="checkbox" id="chk-ordenar" />
+          Concluídas ao final
+        </label>
+        <button id="btn-limpar" class="btn-danger">Limpar Todas</button>
+      </div>
+
+      <ul id="lista-tarefas"></ul>
+    </section>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
